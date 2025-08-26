@@ -1,0 +1,578 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Temedica API",
+    "version": "1.0.0"
+  },
+  "tags": [
+    { "name": "Claims", "description": "Operations related to claims" },
+    { "name": "Prescriptions", "description": "Operations related to prescriptions" },
+    { "name": "Analytics", "description": "Aggregated metrics" }
+  ],
+  "paths": {
+    "/claims": {
+      "post": {
+        "tags": ["Claims"],
+        "summary": "Create a claim",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "patient_id": { "type": "integer" },
+                  "submission_date": { "type": "string", "format": "date" },
+                  "reimbursement_date": { "type": "string", "format": "date" },
+                  "total_cost": { "type": "integer" }
+                },
+                "required": ["patient_id", "submission_date", "reimbursement_date", "total_cost"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Claim created successfully" },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Claims"],
+        "summary": "Get all claims",
+        "parameters": [
+          {
+            "name": "patientId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer" },
+            "description": "Filter claims by patient ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of claims",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Claim" }
+                }
+              }
+            }
+          },
+          "404": { "description": "Claims not found" },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/claims/total-cost-per-patient": {
+      "get": {
+        "tags": ["Claims"],
+        "summary": "Get total claim cost per patient",
+        "description": "Returns the total cost of claims grouped by patient, ordered by highest total first.",
+        "responses": {
+          "200": {
+            "description": "List of total claim costs per patient",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "patientId": { "type": "integer" },
+                      "totalCost": { "type": "integer" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to calculate total claim costs per patient",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Failed to calculate total claim costs per patient" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/claims/average-prescriptions": {
+      "get": {
+        "tags": ["Claims"],
+        "summary": "Get average prescriptions per claim",
+        "description": "Returns the average number of prescriptions per claim.",
+        "responses": {
+          "200": {
+            "description": "Average prescriptions per claim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "averagePrescriptionsPerClaim": { "type": "number" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Failed to calculate average prescriptions per claim",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Failed to calculate average prescriptions per claim" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/claims/{id}": {
+      "get": {
+        "tags": ["Claims"],
+        "summary": "Get claim by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Claim found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Claim" }
+              }
+            }
+          },
+          "404": { "description": "Claim not found" },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Claims"],
+        "summary": "Update a claim",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "submissionDate": { "type": "string", "format": "date" },
+                  "reimbursementDate": { "type": "string", "format": "date" },
+                  "totalCost": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Claim updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Claim" }
+              }
+            }
+          },
+          "404": { "description": "Claim not found" },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Claims"],
+        "summary": "Delete a claim",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Claim deleted" },
+          "404": { "description": "Claim not found" },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prescriptions": {
+      "post": {
+        "tags": ["Prescriptions"],
+        "summary": "Create a prescription",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "claimId": { "type": "integer" },
+                  "drugCodeAtc": { "type": "string" },
+                  "quantity": { "type": "integer" },
+                  "lineCost": { "type": "number" }
+                },
+                "required": ["claimId", "drugCodeAtc", "quantity", "lineCost"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": { "description": "Prescription created successfully" },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": ["Prescriptions"],
+        "summary": "Get all prescriptions (optionally by claimId)",
+        "parameters": [
+          {
+            "name": "claimId",
+            "in": "query",
+            "required": false,
+            "schema": { "type": "integer" },
+            "description": "Filter prescriptions by claim ID"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of prescriptions",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": { "$ref": "#/components/schemas/Prescription" }
+                }
+              }
+            }
+          },
+          "404": { "description": "Prescriptions not found" },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/prescriptions/{id}": {
+      "get": {
+        "tags": ["Prescriptions"],
+        "summary": "Get prescription by ID",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Prescription found",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Prescription" }
+              }
+            }
+          },
+          "404": { "description": "Prescription not found" },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": ["Prescriptions"],
+        "summary": "Update a prescription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "drugCodeAtc": { "type": "string" },
+                  "quantity": { "type": "integer" },
+                  "lineCost": { "type": "number" }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Prescription updated",
+            "content": {
+              "application/json": {
+                "schema": { "$ref": "#/components/schemas/Prescription" }
+              }
+            }
+          },
+          "404": { "description": "Prescription not found" },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": ["Prescriptions"],
+        "summary": "Delete a prescription",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "integer" }
+          }
+        ],
+        "responses": {
+          "200": { "description": "Prescription deleted" },
+          "404": { "description": "Prescription not found" },
+          "500": {
+            "description": "Server error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/analytics/top-drugs": {
+      "get": {
+        "tags": ["Analytics"],
+        "summary": "Get top 10 prescribed drugs within a period",
+        "description": "Returns the top 10 prescribed drugs by claim count for a given date range.",
+        "parameters": [
+          {
+            "name": "startDate",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "Start date for filtering claims (inclusive)"
+          },
+          {
+            "name": "endDate",
+            "in": "query",
+            "required": true,
+            "schema": { "type": "string", "format": "date" },
+            "description": "End date for filtering claims (inclusive)"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of top 10 prescribed drugs",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "drugCode": { "type": "integer" },
+                      "prescribedCount": { "type": "integer" }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Missing startDate or endDate",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "startDate and endDate are required" }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "description": "Top prescribed drugs aggregation failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "error": { "type": "string", "example": "Top prescribed drugs aggregation failed" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Claim": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "patientId": { "type": "integer" },
+          "submissionDate": { "type": "string", "format": "date" },
+          "reimbursementDate": { "type": "string", "format": "date" },
+          "totalCost": { "type": "number" },
+          "patient": { "type": "object" },
+          "prescriptions": { "type": "array", "items": { "type": "object" } },
+          "diagnoses": { "type": "array", "items": { "type": "object" } }
+        }
+      },
+      "Prescription": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer" },
+          "claimId": { "type": "integer" },
+          "drugCodeAtc": { "type": "string" },
+          "quantity": { "type": "integer" },
+          "lineCost": { "type": "number" },
+          "claim": { "type": "object" }
+        }
+      }
+    }
+  }
+}

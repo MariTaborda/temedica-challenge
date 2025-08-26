@@ -1,0 +1,68 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id          Int     @id @default(autoincrement())
+  yearOfBirth Int     @map("year_of_birth")
+  sex         Gender
+  claims      Claim[]
+
+  @@map("patients")
+}
+
+model Claim {
+  id                Int              @id @default(autoincrement())
+  patientId         Int              @map("patient_id")
+  patient           Patient          @relation(fields: [patientId], references: [id])
+  submissionDate    DateTime         @map("submission_date")
+  reimbursementDate DateTime         @map("reimbursement_date")
+  totalCost         Int              @map("total_cost")
+  prescriptions     Prescription[]
+  diagnoses         ClaimDiagnosis[]
+
+  // Indexes
+  @@index([patientId], name: "idx_claim_patient")
+  @@index([submissionDate], name: "idx_claim_submission_date")
+  @@index([reimbursementDate], name: "idx_claim_reimbursement_date")
+  @@map("claims")
+}
+
+model Prescription {
+  id          Int   @id @default(autoincrement())
+  claimId     Int   @map("claim_id")
+  claim       Claim @relation(fields: [claimId], references: [id])
+  drugCodeAtc Int   @map("drug_code_atc")
+  quantity    Int
+  lineCost    Int   @map("line_cost")
+
+  // Index
+  @@index([drugCodeAtc], name: "idx_prescription_drug_code_atc")
+  @@map("prescriptions")
+}
+
+model ClaimDiagnosis {
+  id        Int   @id @default(autoincrement())
+  claimId   Int   @map("claim_id")
+  claim     Claim @relation(fields: [claimId], references: [id])
+  icd10Code Int   @map("icd10_code")
+
+  @@map("claim_diagnoses")
+}
+
+enum Gender {
+  FEMALE
+  MALE
+}

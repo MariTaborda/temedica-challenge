@@ -1,0 +1,43 @@
+{
+  "name": "temedica-backend",
+  "version": "0.0.0",
+  "private": true,
+  "prisma": {
+    "seed": "ts-node prisma/seed.ts"
+  },
+  "scripts": {
+    "dev": "ts-node src/index.ts",
+    "build": "tsc",
+    "start": "node bin/index.js",
+    "format": "prettier --write .",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.14.0",
+    "body-parser": "^2.2.0",
+    "cookie-parser": "~1.4.4",
+    "cors": "^2.8.5",
+    "debug": "~2.6.9",
+    "express": "^4.21.2",
+    "http-errors": "~1.6.3",
+    "morgan": "~1.9.1",
+    "pug": "2.0.0-beta11"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.3",
+    "@types/jest": "^30.0.0",
+    "@types/node": "^24.3.0",
+    "@types/supertest": "^6.0.3",
+    "@types/swagger-ui-express": "^4.1.8",
+    "jest": "^30.1.1",
+    "nodemon": "^3.1.10",
+    "prettier": "^3.0.0",
+    "prisma": "^6.14.0",
+    "supertest": "^7.1.4",
+    "swagger-ui-express": "^5.0.1",
+    "ts-jest": "^29.4.1",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.2"
+  }
+}
