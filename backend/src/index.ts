@@ -10,9 +10,11 @@ import cors from 'cors';
 const app = express();
 const port = 3000;
 
-app.use(cors({
-    origin: 'http://localhost:3001'
-}));
+app.use(
+  cors({
+    origin: 'http://localhost:3001',
+  })
+);
 
 app.use(bodyParser.json());
 
@@ -27,6 +29,6 @@ app.use('/prescriptions', prescriptionsRouter);
 app.use('/analytics', analyticsRouter);
 
 app.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
-    console.log(`Swagger docs at http://localhost:${port}/api-docs`);
+  console.log(`Server running at http://localhost:${port}`);
+  console.log(`Swagger docs at http://localhost:${port}/api-docs`);
 });

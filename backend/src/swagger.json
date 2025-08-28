@@ -119,7 +119,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string", "example": "Failed to calculate total claim costs per patient" }
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to calculate total claim costs per patient"
+                    }
                   }
                 }
               }
@@ -154,7 +157,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string", "example": "Failed to calculate average prescriptions per claim" }
+                    "error": {
+                      "type": "string",
+                      "example": "Failed to calculate average prescriptions per claim"
+                    }
                   }
                 }
               }
@@ -537,7 +543,10 @@
                 "schema": {
                   "type": "object",
                   "properties": {
-                    "error": { "type": "string", "example": "Top prescribed drugs aggregation failed" }
+                    "error": {
+                      "type": "string",
+                      "example": "Top prescribed drugs aggregation failed"
+                    }
                   }
                 }
               }

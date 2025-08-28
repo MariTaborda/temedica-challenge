@@ -41,12 +41,10 @@ Thank you for the opportunity to work on this technical challenge :) Below are t
 
 ## Instructions for the tests:
 
-1. Make sure the backend server is running.
-2. Execute the tests in the `backend` directory:
+1. Execute the tests in the `backend` directory:
    ```shell
    npm test
    ```
-3. `Important:` After running the tests, please run the seeding command again to restore data in the database if you want to continue exploring the implementation.
 
 ## Instructions for the frontend:
 
